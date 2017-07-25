@@ -199,6 +199,7 @@ define grouper::instance (
     }
 
     if $default {
+        include ::profile_d
         profile_d::script { "grouper-${name}.sh":
             content => "export GROUPER_HOME=$grouper_home"
         }
