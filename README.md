@@ -25,7 +25,6 @@ Sample schema are here:  https://spaces.internet2.edu/display/Grouper/Grouper+In
 You can run the grouperInstaller to take care of download, patching, database and then use this module to finish the configuration and manage the installation on an ongoing basis.
 
 It may also be useful to copy your installation and manage different test configs with additional grouper::instance resources.
-Configs defined as grouper::instance so multiple grouper instances can be managed on same host
 
 The module configures these items:
  - subject API adapter in sources.xml  (only a single LDAP adapter is supported)
@@ -61,7 +60,7 @@ Which version to download if groovy_install is set to 'download'
 
 ##### `manage_tomcat`
 
-Install and configure tomcat.  Requires puppetlabs-tomcat module.  RHEL7 only.  Build .war file from the installation(s) managed in grouper::instance resources and place in /usr/share/tomcat/webapps.
+Install and configure tomcat.  Requires puppetlabs-tomcat module.  RHEL7 only.  You can set tomcat_context = ensure on grouper::instance resources and they will configure contexts referencing the grouper web ui and web services.  You can also build .war files from the installation(s) managed in grouper::instance resources and place in /usr/share/tomcat/webapps.
 
 ##### `grouper_system_password`
 
