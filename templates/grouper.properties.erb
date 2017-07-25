@@ -1,0 +1,35 @@
+# Managed by Puppet
+
+# Grouper uses Grouper Configuration Overlays (documented on wiki)
+# By default the configuration is read from grouper.base.properties
+# (which should not be edited), and the grouper.properties overlays
+# the base settings.  See the grouper.base.properties for the possible
+# settings that can be applied to the grouper.properties
+
+
+# differentiate test vs dev vs prod for logging and emailing
+grouper.env.name = <%=@environment_name %>
+
+# the URL which will be used in emails to users.
+#e.g. https://server.school.edu/grouper/
+
+grouper.ui.url = <%=@ui_url %>
+
+# auto-created wheel group for convenience
+configuration.autocreate.system.groups = true
+
+# A wheel group allows you to enable non-GrouperSystem subjects to act
+# like a root user when interacting with the registry.
+groups.wheel.use = true
+
+
+
+# generally should be false
+configuration.detect.utf8.file.problems =<%= @detect_utf8_problems %>
+
+# false if using mariadb driver
+db.log.driver.mismatch = <%= @log_driver_mismatch %>
+
+
+mail.smtp.server = <%= @mail_smtp_server %>
+mail.from.address = <%= @mail_from %>
