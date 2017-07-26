@@ -199,10 +199,40 @@ define grouper::instance (
     }
 
     if $default {
+        # resources defined here will have a (desired) side effect of causing an error
+        # if multiple default grouper instances are defined
+
         include ::profile_d
-        profile_d::script { "grouper-${name}.sh":
+        profile_d::script { "grouper.sh":
             content => "export GROUPER_HOME=$grouper_home"
         }
+        if $::service_provider == 'systemd' {
+
+            file { '/etc/systemd/system/grouper-loader.service':
+                content => file("grouper/grouper-loader.service"),
+                notify => Service['grouper-loader']
+            } ->
+
+            file { '/etc/systemd/system/grouper-loader.service.d':
+                ensure => directory
+            } ->
+
+            file { '/etc/systemd/system/grouper-loader.service.d/local.conf':
+                content => "[Service]\nEnvironment=GROUPER_HOME=$grouper_home"
+            } ~>
+
+             exec { 'grouper-loader-restart-systemd':
+                command => '/bin/systemctl daemon-reload',
+                refreshonly => true
+            } ~>
+
+            service { 'grouper-loader':
+                ensure => running,
+                enable => true
+            }
+
+        }
+
     }
 #
 

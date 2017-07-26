@@ -32,6 +32,7 @@ The module configures these items:
  - log4j config to choose logfile location
  - grouper database configuration (does not initialize database)
  - Adds config for mysql/mariadb in my.cnf.d to set database default encoding to UTF-8 (database restart required)
+ - If system uses systemd, adds unit to start grouper loader daemon
 
 Taken from steps at:
 https://spaces.internet2.edu/display/COmanage/Grouper+Provisioning+Plugin
@@ -183,10 +184,10 @@ If this is true then a GROUPER_HOME environment variable will be set in /etc/pro
 
 ## Usage example
 
-1. You should setup the module and run puppet one time to configure database defaults.  
-2. Restart MariaDB (or MySQL).  
+1. You should setup the module and run puppet one time to configure database defaults.
+2. Restart MariaDB (or MySQL).
 3. Run grouperInstaller.jar.  The most up-to-date details at PDF linked below.
-4. During installation be sure to put in your database info and initialize the database. 
+4. During installation be sure to put in your database info and initialize the database.
 5. Optional:  Install latest mariadb JDBC driver (required if you specify 'mariadb' driver to grouper::instance).  Instructions:  https://spaces.internet2.edu/display/COmanage/Grouper+Provisioning+Plugin%3A+Post+Grouper+Install+Configuration
 6. Run puppet module again, it will detect that grouper is installed and complete configuration.
 

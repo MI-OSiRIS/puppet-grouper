@@ -1,0 +1,19 @@
+#
+# This is a unit file for systemd, to allow the grouper loader daemon to
+# be started when the server starts, and shutdown as needed.
+#
+# For more info about custom unit files, see
+# http://fedoraproject.org/wiki/Systemd
+#
+#
+# GROUPER_HOME is defined in /etc/systemd/system/grouper-loader.service.d/local.conf
+
+[Unit]
+Description=Grouper Loader daemon
+After=multi-user.target
+
+[Service]
+ExecStart=/bin/sh -c "${GROUPER_HOME}/bin/gsh.sh -loader"
+
+[Install]
+WantedBy=multi-user.target
