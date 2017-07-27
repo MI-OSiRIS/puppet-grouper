@@ -59,6 +59,8 @@ class grouper(
 
 	if $manage_tomcat {
 
+		File <| tag == 'grouper-propfile' |> ~> Service['tomcat']
+
 		class { 'tomcat':
 			catalina_home       => '/usr/share/tomcat'
 		}

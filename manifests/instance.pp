@@ -108,6 +108,7 @@ define grouper::instance (
     $detect_utf8_problems  = false,
     $log_driver_mismatch   = false,
     $adapter_config        = undef,
+    $psp_config            = undef,
     $default               = true
 ) {
 
@@ -171,10 +172,14 @@ define grouper::instance (
      $grouper_propfiles_c = [ 'grouper.properties','log4j.properties', 'grouper.hibernate.properties' ]
 
     if $adapter_config {
-        $grouper_propfiles = concat($grouper_propfiles_c, 'sources.xml')
-    } else {
-        $grouper_propfiles = $grouper_propfiles_c
+        $grouper_propfiles_a = 'sources.xml'
     }
+
+    if $psp_config {
+        $grouper_propfiles_p = 'grouper-loader.properties'
+    }
+
+    $grouper_propfiles = concat($grouper_propfiles_c,$grouper_propfiles_a,$grouper_propfiles_p)
 
     $grouper_properties.each | $propdir | {
         $grouper_propfiles.each | $propfile | {
@@ -182,9 +187,11 @@ define grouper::instance (
                 content => template("grouper/${propfile}.erb"),
                 owner => $grouper_user,
                 group => $grouper_group,
-                require => Exec["grouper-installed-${name}"]
+                require => Exec["grouper-installed-${name}"],
+                tag    => [ 'grouper-propfile' ]
             }
         }
+
 
         # There were too many attributes to insert for this to be a very appealing approach
         # it might be nice to preserve the distributed sources.xml - the file we copy in place
@@ -230,6 +237,8 @@ define grouper::instance (
                 ensure => running,
                 enable => true
             }
+
+            File <| tag == 'grouper-propfile' |> ~> Service['grouper-loader']
 
         }
 
