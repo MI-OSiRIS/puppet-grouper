@@ -54,6 +54,7 @@ class grouper(
 	$manage_tomcat = true,
 	$groovy_version = '2.4.12',
 	$groovy_install = 'download',
+	$mail_smtp_server = 'localhost',
 	$grouper_system_password = undef
 ) {
 

@@ -114,6 +114,7 @@ define grouper::instance (
 
     $grouper_home = "${grouper_topdir}/grouper.apiBinary-${grouper_version}"
     $ui_url = "${ui_host}/${ui_path}"
+    $mail_smtp_server = $grouper::mail_smtp_server
 
     exec { "grouper-installed-${name}":
             command => '/bin/false',
