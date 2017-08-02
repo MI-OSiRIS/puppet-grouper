@@ -81,7 +81,7 @@ log4j.logger.edu.internet2.middleware = WARN
 # Provisioning : PSP (version 2.1+)
 log4j.logger.edu.internet2.middleware.psp = INFO
 
-<% if @psp_config %>
+<% if @psp_config['psp_loglevel'] %>
     log4j.logger.edu.internet2.middleware.grouper.pspng=<%=@psp_config['psp_loglevel'] %>
     log4j.logger.edu.internet2.middleware.grouper.changeLog=<%=@psp_config['psp_loglevel'] %>
 <%- end -%>
