@@ -33,6 +33,7 @@ daily.report.emailTo = <%= @psp_config['psp_daily_report_mailto'] %>
 daily.report.saveInDirectory = <%= @psp_config['psp_daily_report_savedir'] %>
 <%- end -%>
 
+# this provisions an object with class groupOfUniqueNames and posixGroup
 changeLog.consumer.pspng_groupOfUniqueNames.class = edu.internet2.middleware.grouper.pspng.PspChangelogConsumerShim
 changeLog.consumer.pspng_groupOfUniqueNames.type = edu.internet2.middleware.grouper.pspng.LdapGroupProvisioner
 changeLog.consumer.pspng_groupOfUniqueNames.quartzCron = 0 * * * * ?
@@ -45,7 +46,7 @@ changeLog.consumer.pspng_groupOfUniqueNames.allGroupsSearchFilter = objectclass=
 changeLog.consumer.pspng_groupOfUniqueNames.singleGroupSearchFilter = (&(objectclass=groupOfUniqueNames)(cn=${group.name}))
 changeLog.consumer.pspng_groupOfUniqueNames.groupSearchAttributes = cn,gidNumber,objectclass
 changeLog.consumer.pspng_groupOfUniqueNames.groupCreationLdifTemplate = dn: cn=${group.name}||cn: ${group.name}||objectclass: groupOfUniqueNames||objectclass: posixGroup||gidNumber: ${group.idIndex}
-changeLog.consumer.pspng_groupOfUniqueNames.userSearchBaseDn = <%=@psp_config['psp_user_search_dn'] %>
+changeLog.consumer.pspng_groupOfUniqueNames.userSearchBaseDn = <%= @psp_config['psp_user_search_dn'] %>
 changeLog.consumer.pspng_groupOfUniqueNames.userSearchFilter = uid=${subject.id}
 
 # changeLog.consumer.pspng_posixGroup.class = edu.internet2.middleware.grouper.pspng.PspChangelogConsumerShim
@@ -63,7 +64,6 @@ changeLog.consumer.pspng_groupOfUniqueNames.userSearchFilter = uid=${subject.id}
 # changeLog.consumer.pspng_posixGroup.userSearchBaseDn =<%=@psp_config['psp_user_search_dn'] %>
 # changeLog.consumer.pspng_posixGroup.userSearchFilter = uid=${subject.id}
 
-# add isMemberOf also down here
 changeLog.consumer.pspng_isMemberOf.class = edu.internet2.middleware.grouper.pspng.PspChangelogConsumerShim
 changeLog.consumer.pspng_isMemberOf.type = edu.internet2.middleware.grouper.pspng.LdapAttributeProvisioner
 changeLog.consumer.pspng_isMemberOf.quartzCron = 0 * * * * ?
@@ -71,7 +71,7 @@ changeLog.consumer.pspng_isMemberOf.retryOnError = true
 changeLog.consumer.pspng_isMemberOf.ldapPoolName = default
 changeLog.consumer.pspng_isMemberOf.provisionedAttributeName = isMemberOf
 changeLog.consumer.pspng_isMemberOf.provisionedAttributeValueFormat = ${group.name}
-changeLog.consumer.pspng_isMemberOf.userSearchBaseDn = <%=@psp_config['psp_user_search_dn'] %>
+changeLog.consumer.pspng_isMemberOf.userSearchBaseDn = <%= @psp_config['psp_user_search_dn'] %>
 changeLog.consumer.pspng_isMemberOf.userSearchFilter = uid=${subject.id}
 # changeLog.consumer.pspng_isMemberOf.allProvisionedValuesPrefix=g:
 

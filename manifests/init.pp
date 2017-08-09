@@ -48,6 +48,11 @@
 #
 # grouper_system_password
 #    if manage_tomcat is true configure grouper_system role and GrouperSystem user in tomcat-users.xml
+#
+# auth_realm_config
+#     If defined, should be a hash which is then passed to 'additional_attributes' param of tomcat::config::server::realm resource
+#	  If not defined no realm is created
+
 
 class grouper(
 	$manage_groovy = true,
@@ -55,12 +60,16 @@ class grouper(
 	$groovy_version = '2.4.12',
 	$groovy_install = 'download',
 	$mail_smtp_server = 'localhost',
-	$grouper_system_password = undef
+	$grouper_system_password = undef,
+	$ajp_tomcat_authentication = true,
+	$http_tomcat_authentication = true,
+	$ldap_auth_realm_config = undef
 ) {
 
 	if $manage_tomcat {
 
 		File <| tag == 'grouper-propfile' |> ~> Service['tomcat']
+		Augeas <| tag == 'grouper-propfile' |> ~> Service['tomcat']
 
 		class { 'tomcat':
 			catalina_home       => '/usr/share/tomcat'
@@ -76,7 +85,8 @@ class grouper(
 			protocol              => 'HTTP/1.1',
 			port                  => '8080',
 			additional_attributes => {
-				'URIEncoding' => 'UTF-8'
+				'URIEncoding' => 'UTF-8',
+				 'tomcatAuthentication' => $http_tomcat_authentication
 			}
 		}
 
@@ -84,7 +94,15 @@ class grouper(
 			protocol              => 'AJP/1.3',
 			port                  => '8009',
 			additional_attributes => {
-				'URIEncoding' => 'UTF-8'
+				'URIEncoding' => 'UTF-8',
+				'tomcatAuthentication' => $ajp_tomcat_authentication
+			}
+		}
+
+		if $ldap_auth_realm_config {
+			tomcat::config::server::realm { 'auth-realm':
+				class_name => "org.apache.catalina.realm.JNDIRealm",
+				additional_attributes =>  $ldap_auth_realm_config
 			}
 		}
 
@@ -101,9 +119,7 @@ class grouper(
 			notify => Service['tomcat']
 		}
 
-		# we are probably going to need a way to manage grouper-ws users in this file (if this is how we auth the api)
-		# https://spaces.internet2.edu/display/Grouper/Grouper+WS+Authentication
-		# for the time being GrouperSystem can be used, maybe that will be sufficient for our needs
+		# Define user GrouperSystem for use by tomcat auth.  Not referenced if using external auth from webserver
 
 		if $password {
 			tomcat::config::server::tomcat_users { 'grouper_system':

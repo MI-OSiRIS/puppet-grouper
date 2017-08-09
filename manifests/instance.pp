@@ -88,6 +88,36 @@
 #
 #    default
 #        If this is true then a GROUPER_HOME environment variable will be set in /etc/profile.d/grouper-${name}.sh
+#
+#   psp_config
+#          Hash of config directives for ldap provisioning service provider.
+#          More information on provider:  https://spaces.internet2.edu/display/Grouper/Grouper+Provisioning%3A+PSPNG
+#          The default template will provision groups having object classes posixGroup and groupOfUniqueNames
+#          It will also provision the isMemberOf attribute into user objects
+#          For details review the grouper-loader.properties.erb template.  TODO:  Allow specification of custom template outside module
+#
+#          Example hash:
+#
+#            $psp_config = {
+#                'psp_group_search_dn'       => 'ou=Groups,dc=example,dc=org',
+#                'psp_user_search_dn'        => 'ou=People,dc=example,dc=org',
+#                'psp_bind_dn'               => 'uid=grouper_psp,ou=Services,dc=example,dc=org',
+#                'psp_ldap_url'              => 'ldaps://ldap.example.org:636',
+#                'psp_bind_password'         => '123456',
+#                'psp_daily_report_mailto'   => 'admin@example.org',
+#                'psp_loglevel'              => 'INFO'
+#            }
+#
+#   external_auth
+#         Boolean, default false.  Configure grouper for authentication/authorization by external source such as shibboleth.
+#         Does not do webserver configs, just the grouper changes needed to accept external auth
+#         See https://spaces.internet2.edu/display/Grouper/Newcastle+University+-+Protecting+UI+With+Shib
+#         Initially when you set external auth none of your subjects will be in the 'sysadmingroup'
+#         Temporarily you can configure http basic auth with user GrouperSystem to get in
+#         Alternately you can avoid setting external_auth until later in the process when you are
+#         sure that subjects are working and you have populated the sysadmingroup.
+#
+#         NOTE:   Once enabled, disabling this param does not restore config attributes deleted from grouper.ui-${grouper_version}/dist/grouper/WEB-INF/web.xml
 
 define grouper::instance (
     $grouper_topdir        = '/opt/grouper',
@@ -97,6 +127,7 @@ define grouper::instance (
     $ui_path               = 'grouper',
     $tomcat_context        = 'present',
     $environment_name      = "${name}",
+    $institution_name      = "Institute of Higher Education",
     $grouper_user          = 'tomcat',
     $grouper_group         = 'tomcat',
     $logdir                = '/var/log/grouper',
@@ -109,10 +140,12 @@ define grouper::instance (
     $log_driver_mismatch   = false,
     $adapter_config        = undef,
     $psp_config            = undef,
+    $external_auth         = false,
     $default               = true
 ) {
 
     $grouper_home = "${grouper_topdir}/grouper.apiBinary-${grouper_version}"
+    $ui_config = "${grouper_topdir}/grouper.ui-${grouper_version}/dist/grouper/WEB-INF"
     $ui_url = "${ui_host}/${ui_path}"
     $mail_smtp_server = $grouper::mail_smtp_server
 
@@ -192,18 +225,36 @@ define grouper::instance (
                 tag    => [ 'grouper-propfile' ]
             }
         }
+    }
 
+    # only one thing in this file for now, could template if needed
+    file { "${$ui_config}/classes/grouperText/grouper.text.en.us.properties":
+        content => "#set properties here to over-ride grouper.text.en.us.base.properties\n\ninstitutionName = $institution_name"
+    }
 
-        # There were too many attributes to insert for this to be a very appealing approach
-        # it might be nice to preserve the distributed sources.xml - the file we copy in place
-        # was copied from the original in full and has our ldap source inserted
-        # augeas{ "${name}-adapter-config-${propdir}":
-                #   incl => "${grouper_topdir}/${propdir}/sources.xml",
-                #   lens => "Xml.lns",
-                #   context => "/files/${grouper_topdir}/${propdir}/sources.xml/sources",
-                #   changes => []
-        # }
+    if $external_auth {
+        augeas { "${name}-struts-config":
+            incl => "${ui_config}/struts-config.xml",
+            lens => "Xml.lns",
+            context => "/files/${ui_config}/struts-config.xml/struts-config/action-mappings/action[#attribute/path='/callLogin']",
+            changes => [
+                'set forward/#attribute/path "/home.do"'
+            ],
+            tag    => [ 'grouper-propfile' ]
+        }
 
+        # remove security constraints (does not leave open, users not authenticated by webserver are anonymous/no access)
+        augeas { "${name}-web-security-config":
+             incl => "${ui_config}/web.xml",
+             lens => "Xml.lns",
+             context => "/files/${ui_config}/web.xml/web-app",
+             changes => [
+                'rm security-constraint',
+                'rm login-config',
+                'rm security-role'
+             ],
+             tag    => [ 'grouper-propfile' ]
+         }
     }
 
     if $default {
