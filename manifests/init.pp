@@ -49,9 +49,10 @@
 # grouper_system_password
 #    if manage_tomcat is true configure grouper_system role and GrouperSystem user in tomcat-users.xml
 #
-# auth_realm_config
+# ldap_auth_realm_config
 #     If defined, should be a hash which is then passed to 'additional_attributes' param of tomcat::config::server::realm resource
 #	  If not defined no realm is created
+#     If you configure this make sure that whatever lookup you configure in LDAP returns grouper_user for users (including GrouperSystem if using it for ws access)
 
 
 class grouper(
