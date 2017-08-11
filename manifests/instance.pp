@@ -13,6 +13,15 @@
 #        Version installed under grouper_topdir, used in constructing GROUPER_HOME.
 #        Default 2.3.0 (current release at this time)
 #
+#    organisation_logo_source
+#       Optional, default logo used if not defined.
+#       Source path of organisation logo which will be copied into place to replace default logo.
+#       Passed directly to source param of file resource and can be a uri like puppet:/// or http:// or fully qualified local path
+#
+#    organisation_logo_file
+#       File name to use for the organization logo file.  Defaults to 'organisation-logo.png'.
+#       Not referenced unless organisation_logo_source defined.
+#
 #    ui_host
 #        http(s)://hostname:port for grouper web ui and web API (path specified separately).
 #        Default fqdn:8080
@@ -122,6 +131,8 @@
 define grouper::instance (
     $grouper_topdir        = '/opt/grouper',
     $grouper_version       = '2.3.0',
+    $organisation_logo_file = 'organisation-logo.png',
+    $organisation_logo_source = undef,
     $ui_host               = '${fqdn}:8080',
     $ws_path               = 'grouper-ws',
     $ui_path               = 'grouper',
@@ -153,6 +164,8 @@ define grouper::instance (
             command => '/bin/false',
             unless => "/bin/test -e $grouper_home"
     }
+
+    Exec["grouper-installed-${name}"] -> File <| tag == 'grouper-propfile' |>
 
     file { "$logdir":
         ensure => directory,
@@ -221,7 +234,6 @@ define grouper::instance (
                 content => template("grouper/${propfile}.erb"),
                 owner => $grouper_user,
                 group => $grouper_group,
-                require => Exec["grouper-installed-${name}"],
                 tag    => [ 'grouper-propfile' ]
             }
         }
@@ -229,7 +241,20 @@ define grouper::instance (
 
     # only one thing in this file for now, could template if needed
     file { "${$ui_config}/classes/grouperText/grouper.text.en.us.properties":
-        content => "#set properties here to over-ride grouper.text.en.us.base.properties\n\ninstitutionName = $institution_name"
+        content => "#set properties here to over-ride grouper.text.en.us.base.properties\n\ninstitutionName = $institution_name",
+        tag    => [ 'grouper-propfile' ]
+    }
+
+    if $organisation_logo_source {
+        file {"${ui_config}/classes/grouper-ui.properties":
+            content => "image.organisation-logo=grouperExternal/public/assets/images/${organisation_logo_file}",
+            tag    => [ 'grouper-propfile' ]
+        }
+
+        file { "${grouper_topdir}/grouper.ui-${grouper_version}/dist/grouper/grouperExternal/public/assets/images/${organisation_logo_file}":
+            source => $organisation_logo_source,
+            tag    => [ 'grouper-propfile' ]
+        }
     }
 
     if $external_auth {
@@ -240,7 +265,7 @@ define grouper::instance (
             changes => [
                 'set forward/#attribute/path "/home.do"'
             ],
-            tag    => [ 'grouper-propfile' ]
+            tag    => [ 'grouper-propfile' ],
         }
 
         # remove security constraints (does not leave open, users not authenticated by webserver are anonymous/no access)
@@ -253,8 +278,8 @@ define grouper::instance (
                 'rm login-config',
                 'rm security-role'
              ],
-             tag    => [ 'grouper-propfile' ]
-         }
+             tag    => [ 'grouper-propfile' ],
+        }
     }
 
     if $default {

@@ -61,6 +61,7 @@ class grouper(
 	$groovy_version = '2.4.12',
 	$groovy_install = 'download',
 	$mail_smtp_server = 'localhost',
+	$mail_from        = "grouper@${fqdn}",
 	$grouper_system_password = undef,
 	$ajp_tomcat_authentication = true,
 	$http_tomcat_authentication = true,
