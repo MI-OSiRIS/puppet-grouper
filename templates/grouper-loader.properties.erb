@@ -64,16 +64,18 @@ changeLog.consumer.pspng_groupOfUniqueNames.userSearchFilter = uid=${subject.id}
 # changeLog.consumer.pspng_posixGroup.userSearchBaseDn =<%=@psp_config['psp_user_search_dn'] %>
 # changeLog.consumer.pspng_posixGroup.userSearchFilter = uid=${subject.id}
 
-changeLog.consumer.pspng_isMemberOf.class = edu.internet2.middleware.grouper.pspng.PspChangelogConsumerShim
-changeLog.consumer.pspng_isMemberOf.type = edu.internet2.middleware.grouper.pspng.LdapAttributeProvisioner
-changeLog.consumer.pspng_isMemberOf.quartzCron = 0 * * * * ?
-changeLog.consumer.pspng_isMemberOf.retryOnError = true
-changeLog.consumer.pspng_isMemberOf.ldapPoolName = default
-changeLog.consumer.pspng_isMemberOf.provisionedAttributeName = isMemberOf
-changeLog.consumer.pspng_isMemberOf.provisionedAttributeValueFormat = ${group.name}
-changeLog.consumer.pspng_isMemberOf.userSearchBaseDn = <%= @psp_config['psp_user_search_dn'] %>
-changeLog.consumer.pspng_isMemberOf.userSearchFilter = uid=${subject.id}
-# changeLog.consumer.pspng_isMemberOf.allProvisionedValuesPrefix=g:
+# was experimenting with this until I realized you can just set the ldap server to maintain memberOf
+
+# changeLog.consumer.pspng_memberOf.class = edu.internet2.middleware.grouper.pspng.PspChangelogConsumerShim
+# changeLog.consumer.pspng_memberOf.type = edu.internet2.middleware.grouper.pspng.LdapAttributeProvisioner
+# changeLog.consumer.pspng_memberOf.quartzCron = 0 * * * * ?
+# changeLog.consumer.pspng_memberOf.retryOnError = true
+# changeLog.consumer.pspng_memberOf.ldapPoolName = default
+# changeLog.consumer.pspng_memberOf.provisionedAttributeName = memberOf
+# changeLog.consumer.pspng_memberOf.provisionedAttributeValueFormat = ${group.name}
+# changeLog.consumer.pspng_memberOf.userSearchBaseDn = <%= @psp_config['psp_user_search_dn'] %>
+# changeLog.consumer.pspng_memberOf.userSearchFilter = uid=${subject.id}
+# # changeLog.consumer.pspng_memberOf.allProvisionedValuesPrefix=g:
 
 #changeLog.consumer.pspng_attributes.provisionedAttributeName = eduPersonEntitlement
 #changeLog.consumer.pspng_attributes.provisionedAttributeValueFormat = g:${group.name}

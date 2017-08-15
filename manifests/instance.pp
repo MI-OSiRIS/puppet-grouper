@@ -194,7 +194,6 @@ define grouper::instance (
                 'mapperDirectoryRedirectEnabled' => 'true'
             }
         }
-
     }
 
     case $db_type {
