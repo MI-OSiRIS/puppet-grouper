@@ -1,0 +1,13 @@
+# overlay for grouper-ui.base.properties
+
+<% if @organisation_logo_filename %>
+image.organisation-logo=grouperExternal/public/assets/images/<%= @organisation_logo_filename %>
+<%- end -%>
+
+<% if @logout_redirect_url %>
+grouperUi.logout.redirectToUrl = <%= @logout_redirect_url %>
+<%- end -%>
+
+<% if @custom_css or @custom_css_source %>
+css.additional=../../grouperExternal/public/assets/custom.css
+<%- end -%>

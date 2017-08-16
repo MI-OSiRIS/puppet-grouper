@@ -18,7 +18,7 @@
 #       Source path of organisation logo which will be copied into place to replace default logo.
 #       Passed directly to source param of file resource and can be a uri like puppet:/// or http:// or fully qualified local path
 #
-#    organisation_logo_file
+#    organisation_logo_filename
 #       File name to use for the organization logo file.  Defaults to 'organisation-logo.png'.
 #       Not referenced unless organisation_logo_source defined.
 #
@@ -127,11 +127,18 @@
 #         sure that subjects are working and you have populated the sysadmingroup.
 #
 #         NOTE:   Once enabled, disabling this param does not restore config attributes deleted from grouper.ui-${grouper_version}/dist/grouper/WEB-INF/web.xml
+#
+#      custom_css
+#           A string of css that will be included in every page header
+#       custom_css_source
+#            A file uri for a css file to be copied top grouperExternal/public/assets/custom.css and included in every page header
+#            Cannot set both css params simultaneously.
+
 
 define grouper::instance (
     $grouper_topdir        = '/opt/grouper',
     $grouper_version       = '2.3.0',
-    $organisation_logo_file = 'organisation-logo.png',
+    $organisation_logo_filename = undef,
     $organisation_logo_source = undef,
     $ui_host               = '${fqdn}:8080',
     $ws_path               = 'grouper-ws',
@@ -152,11 +159,15 @@ define grouper::instance (
     $adapter_config        = undef,
     $psp_config            = undef,
     $external_auth         = false,
+    $logout_redirect_url   = undef,
+    $custom_css            = undef,  # custom_css takes a string, custom_css_source a file path uri.  Cannot set both.
+    $custom_css_source     = undef,
     $default               = true
 ) {
 
     $grouper_home = "${grouper_topdir}/grouper.apiBinary-${grouper_version}"
     $ui_config = "${grouper_topdir}/grouper.ui-${grouper_version}/dist/grouper/WEB-INF"
+    $web_assets = "${grouper_topdir}/grouper.ui-${grouper_version}/dist/grouper/grouperExternal/public/assets/"
     $ui_url = "${ui_host}/${ui_path}"
     $mail_smtp_server = $grouper::mail_smtp_server
 
@@ -245,15 +256,26 @@ define grouper::instance (
     }
 
     if $organisation_logo_source {
-        file {"${ui_config}/classes/grouper-ui.properties":
-            content => "image.organisation-logo=grouperExternal/public/assets/images/${organisation_logo_file}",
-            tag    => [ 'grouper-propfile' ]
-        }
-
-        file { "${grouper_topdir}/grouper.ui-${grouper_version}/dist/grouper/grouperExternal/public/assets/images/${organisation_logo_file}":
+        file { "${web_assets}/images/${organisation_logo_filename}":
             source => $organisation_logo_source,
-            tag    => [ 'grouper-propfile' ]
         }
+    }
+
+    if ($custom_css != undef) {
+        file { "${web_assets}/custom.css":
+            content => $custom_css
+        }
+    }
+
+    if ($custom_css_source != undef) {
+        file { "${web_assets}/custom.css":
+            source => $custom_css_source
+        }
+    }
+
+    file {"${ui_config}/classes/grouper-ui.properties":
+        content => template("grouper/grouper-ui.properties.erb"),
+        tag    => [ 'grouper-propfile' ]
     }
 
     if $external_auth {
