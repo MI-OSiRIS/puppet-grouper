@@ -116,6 +116,8 @@
 #                'psp_daily_report_mailto'   => 'admin@example.org',
 #                'psp_loglevel'              => 'INFO'
 #            }
+#   TODO:  Relevant values in this hash used to configure the changelog consumer probably should be a more flexible attribute => value hash merged with some reasonable defaults
+#          And/or allow the option to specify an external file source to install instead.
 #
 #   external_auth
 #         Boolean, default false.  Configure grouper for authentication/authorization by external source such as shibboleth.
