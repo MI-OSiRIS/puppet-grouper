@@ -15,8 +15,10 @@ daily.report.quartz.cron = 0 0 * * * ?
 
 # supposedly these are deprecated in pspng patch #11 and should not be used
 # See 'Upgrade Warning': https://spaces.internet2.edu/display/Grouper/Grouper+Provisioning%3A+PSPNG
-#changeLog.psp.fullSync.runAtStartup = true
-#changeLog.psp.fullSync.class = edu.internet2.middleware.grouper.pspng.FullSyncStarter
+# But...how else to get a full sync at restart?  Leaving that part enabled.
+
+changeLog.psp.fullSync.runAtStartup = true
+changeLog.psp.fullSync.class = edu.internet2.middleware.grouper.pspng.FullSyncStarter
 #changeLog.psp.fullSync.quartzCron = 0 0 0 * * ?
 
 otherJob.pspng_full.class = edu.internet2.middleware.grouper.pspng.FullSyncStarter
