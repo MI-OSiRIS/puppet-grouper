@@ -171,6 +171,13 @@ class grouper(
 		content =>  "[mysqld] \ncharacter-set-server = utf8 \ncollation-server = utf8_bin"
 	}
 
+	if $::selinux {
+
+    	selinux::module { 'tomcat-local':
+        	content => file('tomcat-local.te')
+    	}
+	}
+
 }
 
 
