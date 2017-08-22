@@ -183,7 +183,8 @@ define grouper::instance (
     file { "$logdir":
         ensure => directory,
         owner  => $grouper_user,
-        group  => $grouper_group
+        group  => $grouper_group,
+        seltype => 'tomcat_log_t'
     }
 
     if $::grouper::manage_tomcat {
@@ -246,6 +247,7 @@ define grouper::instance (
                 content => template("grouper/${propfile}.erb"),
                 owner => $grouper_user,
                 group => $grouper_group,
+                seltype => 'tomcat_var_lib_t',
                 tag    => [ 'grouper-propfile' ]
             }
         }
