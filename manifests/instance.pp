@@ -256,30 +256,35 @@ define grouper::instance (
     # only one thing in this file for now, could template if needed
     file { "${$ui_config}/classes/grouperText/grouper.text.en.us.properties":
         content => "#set properties here to over-ride grouper.text.en.us.base.properties\n\ninstitutionName = $institution_name",
-        tag    => [ 'grouper-propfile' ]
+        tag    => [ 'grouper-propfile' ],
+        seltype => 'tomcat_var_lib_t'
     }
 
     if $organisation_logo_source {
         file { "${web_assets}/images/${organisation_logo_filename}":
             source => $organisation_logo_source,
+            seltype => 'tomcat_var_lib_t'
         }
     }
 
     if ($custom_css != undef) {
         file { "${web_assets}/custom.css":
-            content => $custom_css
+            content => $custom_css,
+            seltype => 'tomcat_var_lib_t'
         }
     }
 
     if ($custom_css_source != undef) {
         file { "${web_assets}/custom.css":
-            source => $custom_css_source
+            source => $custom_css_source,
+            seltype => 'tomcat_var_lib_t'
         }
     }
 
     file {"${ui_config}/classes/grouper-ui.properties":
         content => template("grouper/grouper-ui.properties.erb"),
-        tag    => [ 'grouper-propfile' ]
+        tag    => [ 'grouper-propfile' ],
+        seltype => 'tomcat_var_lib_t'
     }
 
     if $external_auth {
