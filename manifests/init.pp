@@ -174,7 +174,7 @@ class grouper(
 	if $::selinux {
 
     	selinux::module { 'tomcat-local':
-        	content => file('grouper/tomcat-local.te')
+        	content => file('grouper/grouper-local.te')
     	}
 	}
 
