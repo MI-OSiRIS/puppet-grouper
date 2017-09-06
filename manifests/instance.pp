@@ -148,6 +148,8 @@ define grouper::instance (
     $tomcat_context        = 'present',
     $environment_name      = "${name}",
     $institution_name      = "Institute of Higher Education",
+    $mail_smtp_server      = $grouper::mail_smtp_server,
+    $mail_from             = $grouper::mail_from,
     $grouper_user          = 'tomcat',
     $grouper_group         = 'tomcat',
     $logdir                = '/var/log/grouper',
@@ -171,7 +173,7 @@ define grouper::instance (
     $ui_config = "${grouper_topdir}/grouper.ui-${grouper_version}/dist/grouper/WEB-INF"
     $web_assets = "${grouper_topdir}/grouper.ui-${grouper_version}/dist/grouper/grouperExternal/public/assets/"
     $ui_url = "${ui_host}/${ui_path}"
-    $mail_smtp_server = $grouper::mail_smtp_server
+
 
     exec { "grouper-installed-${name}":
             command => '/bin/false',
