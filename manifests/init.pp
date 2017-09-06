@@ -149,7 +149,7 @@ class grouper(
 		if $groovy_install == 'download' {
 		    puppi::netinstall { 'groovysh':
 		        url                 => "https://dl.bintray.com/groovy/maven/apache-groovy-binary-${groovy_version}.zip",
-		        work_dir            => '/tmp',
+		        work_dir            => '/var/cache',
 		        extracted_dir       => "groovy-${groovy_version}",
 		        destination_dir     => '/opt',
 		        postextract_command => "ln -s /opt/groovy-${groovy_version} /opt/groovy ; ln -s /opt/groovy/bin/groovysh /usr/bin/groovysh"
