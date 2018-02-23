@@ -114,6 +114,7 @@
 #                'psp_ldap_url'              => 'ldaps://ldap.example.org:636',
 #                'psp_bind_password'         => '123456',
 #                'psp_daily_report_mailto'   => 'admin@example.org',
+#                'psp_bushy_dn'              => true,
 #                'psp_loglevel'              => 'INFO'
 #            }
 #   TODO:  Relevant values in this hash used to configure the changelog consumer probably should be a more flexible attribute => value hash merged with some reasonable defaults
@@ -344,7 +345,7 @@ define grouper::instance (
 
             service { 'grouper-loader':
                 ensure => running,
-                enable => true
+               enable => true
             }
 
             File <| tag == 'grouper-propfile' |> ~> Service['grouper-loader']

@@ -49,9 +49,17 @@ changeLog.consumer.pspng_groupOfUniqueNames.memberAttributeName = uniqueMember
 changeLog.consumer.pspng_groupOfUniqueNames.memberAttributeValueFormat = ${ldapUser.getDn()}
 changeLog.consumer.pspng_groupOfUniqueNames.groupSearchBaseDn = <%=@psp_config['psp_group_search_dn'] %>
 changeLog.consumer.pspng_groupOfUniqueNames.allGroupsSearchFilter = (&(objectclass=groupOfUniqueNames)(owner=<%=@psp_config['psp_bind_dn'] %>))
-changeLog.consumer.pspng_groupOfUniqueNames.singleGroupSearchFilter = (&(objectclass=groupOfUniqueNames)(cn=${group.name}))
+
 changeLog.consumer.pspng_groupOfUniqueNames.groupSearchAttributes = cn,gidNumber,objectclass
+
+<% if @psp_config['psp_bushy_dn'] -%>
+changeLog.consumer.pspng_groupOfUniqueNames.singleGroupSearchFilter = (&(objectclass=groupOfUniqueNames)(cn=${group.extension}))
+changeLog.consumer.pspng_groupOfUniqueNames.groupCreationLdifTemplate = dn: ${utils.bushyDn(group.name, "cn", "ou")}||cn: ${group.extension}||objectclass: groupOfUniqueNames||objectclass: posixGroup||gidNumber: ${group.idIndex}||owner: <%=@psp_config['psp_bind_dn'] %>
+<% else %> 
 changeLog.consumer.pspng_groupOfUniqueNames.groupCreationLdifTemplate = dn: cn=${group.name}||cn: ${group.name}||objectclass: groupOfUniqueNames||objectclass: posixGroup||gidNumber: ${group.idIndex}||owner: <%=@psp_config['psp_bind_dn'] %>
+changeLog.consumer.pspng_groupOfUniqueNames.singleGroupSearchFilter = (&(objectclass=groupOfUniqueNames)(cn=${group.name}))
+<%- end -%>
+
 changeLog.consumer.pspng_groupOfUniqueNames.userSearchBaseDn = <%= @psp_config['psp_user_search_dn'] %>
 changeLog.consumer.pspng_groupOfUniqueNames.userSearchFilter = uid=${subject.id}
 changeLog.consumer.pspng_groupOfUniqueNames.grouperIsAuthoritative = TRUE
