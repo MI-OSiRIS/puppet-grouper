@@ -9,9 +9,9 @@
 # note on quartzCron:  first field is seconds
 # http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html
 
-ldap.default.ldapUrl =  <%=@psp_config['psp_ldap_url'] %>
-ldap.default.bindDn = <%=@psp_config['psp_bind_dn'] %>
-ldap.default.bindCredential = <%=@psp_config['psp_bind_password'] %>
+ldap.default.ldapUrl =  <%=@psp_config_tmpl['psp_ldap_url'] %>
+ldap.default.bindDn = <%=@psp_config_tmpl['psp_bind_dn'] %>
+ldap.default.bindCredential = <%=@psp_config_tmpl['psp_bind_password'] %>
 # ldap.default.someOtherLdapProperty = value
 
 # supposedly these are deprecated in pspng patch #11 and should not be used
@@ -28,18 +28,19 @@ otherJob.pspng_full.quartzCron = 0 0 0 * * ?
 # if mailto or savedir isn't set then no report will run
 daily.report.quartz.cron = 0 0 1 * * ?
 
-<% if @psp_config['psp_daily_report_mailto'] -%>
-daily.report.emailTo = <%= @psp_config['psp_daily_report_mailto'] %>
+<% if @psp_config_tmpl['psp_daily_report_mailto'] -%>
+daily.report.emailTo = <%= @psp_config_tmpl['psp_daily_report_mailto'] %>
 <%- end -%>
 
-<% if @psp_config['psp_daily_report_savedir'] -%>
-daily.report.saveInDirectory = <%= @psp_config['psp_daily_report_savedir'] %>
+<% if @psp_config_tmpl['psp_daily_report_savedir'] -%>
+daily.report.saveInDirectory = <%= @psp_config_tmpl['psp_daily_report_savedir'] %>
 <%- end -%>
 
 # this provisions an object with class groupOfUniqueNames and posixGroup
 # grouperIsAuthoritative is TRUE but effects only groups provisioned by this consumer
 # which sets the psp_bind_dn as the owner of provisioned groups
 
+changeLog.consumer.pspng_groupOfUniqueNames.groupSearch_batchSize = <%=@psp_config_tmpl['psp_group_search_batchsize'] %>
 changeLog.consumer.pspng_groupOfUniqueNames.class = edu.internet2.middleware.grouper.pspng.PspChangelogConsumerShim
 changeLog.consumer.pspng_groupOfUniqueNames.type = edu.internet2.middleware.grouper.pspng.LdapGroupProvisioner
 changeLog.consumer.pspng_groupOfUniqueNames.quartzCron = 0 * * * * ?
@@ -47,20 +48,20 @@ changeLog.consumer.pspng_groupOfUniqueNames.ldapPoolName = default
 changeLog.consumer.pspng_groupOfUniqueNames.memberAttributeName = uniqueMember
 # changeLog.consumer.pspng_posixGroup.memberAttributeValueFormat = ${ldapUser.getStringValue("uid")}
 changeLog.consumer.pspng_groupOfUniqueNames.memberAttributeValueFormat = ${ldapUser.getDn()}
-changeLog.consumer.pspng_groupOfUniqueNames.groupSearchBaseDn = <%=@psp_config['psp_group_search_dn'] %>
-changeLog.consumer.pspng_groupOfUniqueNames.allGroupsSearchFilter = (&(objectclass=groupOfUniqueNames)(owner=<%=@psp_config['psp_bind_dn'] %>))
+changeLog.consumer.pspng_groupOfUniqueNames.groupSearchBaseDn = <%=@psp_config_tmpl['psp_group_search_dn'] %>
+changeLog.consumer.pspng_groupOfUniqueNames.allGroupsSearchFilter = (&(objectclass=groupOfUniqueNames)(owner=<%=@psp_config_tmpl['psp_bind_dn'] %>))
 
 changeLog.consumer.pspng_groupOfUniqueNames.groupSearchAttributes = cn,gidNumber,objectclass
 
-<% if @psp_config['psp_bushy_dn'] -%>
+<% if @psp_config_tmpl['psp_bushy_dn'] -%>
 changeLog.consumer.pspng_groupOfUniqueNames.singleGroupSearchFilter = (&(objectclass=groupOfUniqueNames)(cn=${group.extension}))
-changeLog.consumer.pspng_groupOfUniqueNames.groupCreationLdifTemplate = dn: ${utils.bushyDn(group.name, "cn", "ou")}||cn: ${group.extension}||objectclass: groupOfUniqueNames||objectclass: posixGroup||gidNumber: ${group.idIndex}||owner: <%=@psp_config['psp_bind_dn'] %>
+changeLog.consumer.pspng_groupOfUniqueNames.groupCreationLdifTemplate = dn: ${utils.bushyDn(group.name, "cn", "ou")}||cn: ${group.extension}||objectclass: groupOfUniqueNames||objectclass: posixGroup||gidNumber: ${group.idIndex}||owner: <%=@psp_config_tmpl['psp_bind_dn'] %>
 <% else %> 
-changeLog.consumer.pspng_groupOfUniqueNames.groupCreationLdifTemplate = dn: cn=${group.name}||cn: ${group.name}||objectclass: groupOfUniqueNames||objectclass: posixGroup||gidNumber: ${group.idIndex}||owner: <%=@psp_config['psp_bind_dn'] %>
+changeLog.consumer.pspng_groupOfUniqueNames.groupCreationLdifTemplate = dn: cn=${group.name}||cn: ${group.name}||objectclass: groupOfUniqueNames||objectclass: posixGroup||gidNumber: ${group.idIndex}||owner: <%=@psp_config_tmpl['psp_bind_dn'] %>
 changeLog.consumer.pspng_groupOfUniqueNames.singleGroupSearchFilter = (&(objectclass=groupOfUniqueNames)(cn=${group.name}))
 <%- end -%>
 
-changeLog.consumer.pspng_groupOfUniqueNames.userSearchBaseDn = <%= @psp_config['psp_user_search_dn'] %>
+changeLog.consumer.pspng_groupOfUniqueNames.userSearchBaseDn = <%= @psp_config_tmpl['psp_user_search_dn'] %>
 changeLog.consumer.pspng_groupOfUniqueNames.userSearchFilter = uid=${subject.id}
 changeLog.consumer.pspng_groupOfUniqueNames.grouperIsAuthoritative = TRUE
 
@@ -70,13 +71,13 @@ changeLog.consumer.pspng_groupOfUniqueNames.grouperIsAuthoritative = TRUE
 # changeLog.consumer.pspng_posixGroup.ldapPoolName = default
 # changeLog.consumer.pspng_posixGroup.memberAttributeName = memberUid
 # changeLog.consumer.pspng_posixGroup.memberAttributeValueFormat = ${ldapUser.getStringValue("uid")}
-# changeLog.consumer.pspng_posixGroup.groupSearchBaseDn = <%=@psp_config['psp_group_search_dn'] %>
+# changeLog.consumer.pspng_posixGroup.groupSearchBaseDn = <%=@psp_config_tmpl['psp_group_search_dn'] %>
 # changeLog.consumer.pspng_posixGroup.allGroupsSearchFilter = objectclass=posixGroup
 # changeLog.consumer.pspng_posixGroup.singleGroupSearchFilter = (&(objectclass=posixGroup)(cn=${group.name}))
 # changeLog.consumer.pspng_posixGroup.groupSearchAttributes = cn,gidNumber,objectclass
 # # Obviously, gidNumber should be based on a grouper-group attribute
 # changeLog.consumer.pspng_posixGroup.groupCreationLdifTemplate = dn: cn=${group.name}||cn: ${group.name}||objectclass: posixGroup||objectclass: groupOfNames||gidNumber: ${group.idIndex}
-# changeLog.consumer.pspng_posixGroup.userSearchBaseDn =<%=@psp_config['psp_user_search_dn'] %>
+# changeLog.consumer.pspng_posixGroup.userSearchBaseDn =<%=@psp_config_tmpl['psp_user_search_dn'] %>
 # changeLog.consumer.pspng_posixGroup.userSearchFilter = uid=${subject.id}
 
 # better to set the ldap server to maintain memberOf relationships, left for example
@@ -88,12 +89,12 @@ changeLog.consumer.pspng_groupOfUniqueNames.grouperIsAuthoritative = TRUE
 # changeLog.consumer.pspng_memberOf.ldapPoolName = default
 # changeLog.consumer.pspng_memberOf.provisionedAttributeName = memberOf
 # changeLog.consumer.pspng_memberOf.provisionedAttributeValueFormat = ${group.name}
-# changeLog.consumer.pspng_memberOf.userSearchBaseDn = <%= @psp_config['psp_user_search_dn'] %>
+# changeLog.consumer.pspng_memberOf.userSearchBaseDn = <%= @psp_config_tmpl['psp_user_search_dn'] %>
 # changeLog.consumer.pspng_memberOf.userSearchFilter = uid=${subject.id}
 # changeLog.consumer.pspng_memberOf.allProvisionedValuesPrefix=g:
 
 #changeLog.consumer.pspng_attributes.provisionedAttributeName = eduPersonEntitlement
 #changeLog.consumer.pspng_attributes.provisionedAttributeValueFormat = g:${group.name}
-#changeLog.consumer.pspng_attributes.userSearchBaseDn = <%=@psp_config['psp_user_search_dn'] %>
+#changeLog.consumer.pspng_attributes.userSearchBaseDn = <%=@psp_config_tmpl['psp_user_search_dn'] %>
 #changeLog.consumer.pspng_attributes.userSearchFilter = uid=${subject.id}
 #changeLog.consumer.pspng_attributes.allProvisionedValuesPrefix=g:

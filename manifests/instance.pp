@@ -116,9 +116,17 @@
 #                'psp_daily_report_mailto'   => 'admin@example.org',
 #                'psp_bushy_dn'              => true,
 #                'psp_loglevel'              => 'INFO'
+#                'psp_group_search_batchsize' => 5000    // not required, default value 
 #            }
-#   TODO:  Relevant values in this hash used to configure the changelog consumer probably should be a more flexible attribute => value hash merged with some reasonable defaults
-#          And/or allow the option to specify an external file source to install instead.
+# 
+#           ** Note on psp_group_search_batchsize:          
+#           The default on groupSearch_batchSize is 50, which is far too low for most cases
+#           Hitting the limit causes problems in fullsync: 'fetchTargetSystemGroups: invoked with too many groups'
+#           We've set a default of 5000 - could be a resource issue if grouper or ldap target can't manage the full batch? 
+#           See: https://github.com/Internet2/grouper/blob/master/grouper-misc/grouper-pspng/src/main/java/edu/internet2/middleware/grouper/pspng/LdapGroupProvisioner.java#L447
+#        
+#
+#   TODO:  allow the option to specify an external file source to install instead.
 #
 #   external_auth
 #         Boolean, default false.  Configure grouper for authentication/authorization by external source such as shibboleth.
@@ -239,6 +247,9 @@ define grouper::instance (
     }
 
     if $psp_config {
+
+        $psp_config_default = { 'psp_group_search_batchsize' => 5000 };
+        $psp_config_tmpl = $psp_config_default + $psp_config
         $grouper_propfiles_p = 'grouper-loader.properties'
     }
 
