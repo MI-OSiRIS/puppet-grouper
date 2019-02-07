@@ -14,16 +14,17 @@ ldap.default.bindDn = <%=@psp_config_tmpl['psp_bind_dn'] %>
 ldap.default.bindCredential = <%=@psp_config_tmpl['psp_bind_password'] %>
 # ldap.default.someOtherLdapProperty = value
 
-# supposedly these are deprecated in pspng patch #11 and should not be used
-# See 'Upgrade Warning': https://spaces.internet2.edu/display/Grouper/Grouper+Provisioning%3A+PSPNG
-# But...how else to get a full sync at restart?  Leaving that part enabled.
+# these are deprecated in pspng patch #11 and should not be used
+# See Full SYNC Provisioning and 'Upgrade Warning': 
+# https://spaces.internet2.edu/display/Grouper/Grouper+Provisioning%3A+PSPNG
 
-changeLog.psp.fullSync.runAtStartup = true
-changeLog.psp.fullSync.class = edu.internet2.middleware.grouper.pspng.FullSyncStarter
-#changeLog.psp.fullSync.quartzCron = 0 0 0 * * ?
+# changeLog.psp.fullSync.runAtStartup = true
+# changeLog.psp.fullSync.class = edu.internet2.middleware.grouper.pspng.FullSyncStarter
+# changeLog.psp.fullSync.quartzCron = 0 0 0 * * ?
 
-otherJob.pspng_full.class = edu.internet2.middleware.grouper.pspng.FullSyncStarter
-otherJob.pspng_full.quartzCron = 0 0 0 * * ?
+# 2nd field should match provisioner name with _full appended
+otherJob.pspng_groupOfUniqueNames_full.class = edu.internet2.middleware.grouper.pspng.FullSyncStarter
+otherJob.pspng_groupOfUniqueNames_full.quartzCron = 0 0 0 * * ?
 
 # if mailto or savedir isn't set then no report will run
 daily.report.quartz.cron = 0 0 1 * * ?
