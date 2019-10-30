@@ -174,7 +174,7 @@ class grouper(
 	if $::selinux {
 
     	selinux::module { 'grouper-local':
-        	content => file('grouper/grouper-local.te')
+        	source_te => 'puppet:///modules/grouper/grouper-local.te'
     	}
 	}
 
