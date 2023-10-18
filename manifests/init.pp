@@ -79,6 +79,7 @@ class grouper(
 
 		# Just using a few basic resources from mdule
 		tomcat::install { 'grouper_tomcat':
+  			catalina_home => "/usr/share/tomcat",
 			install_from_source => false,
 			package_name        => 'tomcat',
 		}
