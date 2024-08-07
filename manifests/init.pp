@@ -56,8 +56,15 @@
 
 
 class grouper(
-	$manage_groovy = true,
-	$manage_tomcat = true,
+# Temporarily disabling the management of thsoe two b\c it's currently changing working config with broken one. 
+# For groovy, there is a broken link for the download. For tomcat, we switched to using the tomcat version packaged with the grouper dist.
+# So having puppet install its rpm tomcat on EL9 will setup new version that didn't work with this version of grouper in 
+# our test environment. Short term plan is to use the new comanage registry feature for managing groups and getting rid of grouper and tomcat.
+# That will make things easier to manage for the team.
+	#$manage_groovy = true,
+	#$manage_tomcat = true,
+ 	$manage_groovy = false,
+	$manage_tomcat = false,
 	$groovy_version = '2.4.12',
 	$groovy_install = 'download',
 	$mail_smtp_server = 'localhost',
