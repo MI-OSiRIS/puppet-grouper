@@ -24,7 +24,7 @@
 #
 #    ui_host
 #        http(s)://hostname:port for grouper web ui and web API (path specified separately).
-#        Default fqdn:8080
+#        Default http://<fqdn>:8080
 #
 #    ui_path
 #        Path component of URL for grouper web ui without / prefix.  Default 'grouper'.
@@ -151,7 +151,7 @@ define grouper::instance (
     $grouper_version       = '2.3.0',
     $organisation_logo_filename = undef,
     $organisation_logo_source = undef,
-    $ui_host               = '${fqdn}:8080',
+    $ui_host               = "http://${facts['networking']['fqdn']}:8080",
     $ws_path               = 'grouper-ws',
     $ui_path               = 'grouper',
     $tomcat_context        = 'present',
