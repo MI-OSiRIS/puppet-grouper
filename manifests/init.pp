@@ -68,7 +68,7 @@ class grouper(
 	$groovy_version = '2.4.12',
 	$groovy_install = 'download',
 	$mail_smtp_server = 'localhost',
-	$mail_from        = "grouper@${fqdn}",
+	$mail_from        = "grouper@${facts['networking']['fqdn']}",
 	$grouper_system_password = undef,
 	$ajp_tomcat_authentication = true,
 	$http_tomcat_authentication = true,
@@ -179,7 +179,7 @@ class grouper(
 		content =>  "[mysqld] \ncharacter-set-server = utf8 \ncollation-server = utf8_bin"
 	}
 
-	if $::selinux {
+	if $facts['os']['selinux']['enabled'] {
 
     	selinux::module { 'grouper-local':
         	source_te => 'puppet:///modules/grouper/grouper-local.te'
